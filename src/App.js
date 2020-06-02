@@ -20,10 +20,7 @@ const App = () => {
         return {address, birthDate, name, id, telecom};
       });
     };
-    fetchPatients().then(r => {
-      console.log(r);
-      setPatients(r);
-    });
+    fetchPatients().then(r => setPatients(r));
   }, []);
 
   return (
