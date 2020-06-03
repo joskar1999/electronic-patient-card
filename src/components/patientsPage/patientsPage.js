@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TopBar from '../topBar/topBar';
 import PatientCard from '../patientCard/patientCard';
 import axiosInstance from '../../utils/axiosInstance';
+import { baseUrl } from '../../constants/constants';
 
 const PatientsPage = (props) => {
   const [patients, setPatients] = useState([]);
@@ -9,7 +10,7 @@ const PatientsPage = (props) => {
 
   useEffect(() => {
     const fetchPatients = async () => {
-      const {data: {entry}} = await axiosInstance.get('/Patient');
+      const {data: {entry}} = await axiosInstance.get(`${baseUrl}/Patient`);
       return entry.map(({resource: {address, birthDate, name, id, telecom}}) => {
         return {address, birthDate, name, id, telecom};
       });
