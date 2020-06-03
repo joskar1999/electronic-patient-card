@@ -26,7 +26,7 @@ const PatientDetailPage = (props) => {
       birthDate: response.birthDate,
       telecom: response.telecom[0].value
     }));
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const fetchObservations = async (next) => {
@@ -46,8 +46,8 @@ const PatientDetailPage = (props) => {
             handleFetchedData(entry, link);
           });
     };
-    fetchObservations();
-  }, []);
+    fetchObservations().then();
+  }, [id]);
 
   return (
       <div>
