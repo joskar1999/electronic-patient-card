@@ -1,4 +1,4 @@
-import React, { useDebugValue } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -31,13 +31,14 @@ const PatientCard = (props) => {
             Birth date: {props.birthDate}
           </Typography>
           <Typography className={classes.title} variant="h6" gutterBottom>
-            Phone number: {props.telecom[0].value}
+            Phone number: {props.telecom}
           </Typography>
         </CardContent>
         <CardActions>
-          <Link to={`/patients/${props.id}`} style={{textDecoration: 'none'}}>
-            <Button size="small">Show details</Button>
-          </Link>
+          {props.id ? <Link to={`/patients/${props.id}`} style={{textDecoration: 'none'}}>
+                <Button size="small">Show details</Button>
+              </Link>
+              : null}
         </CardActions>
       </Card>
   );

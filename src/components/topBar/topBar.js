@@ -61,20 +61,21 @@ const TopBar = (props) => {
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
-              Patients
+              {props.title}
             </Typography>
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon/>
-              </div>
-              <InputBase
-                  placeholder="Patient…"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput,
-                  }}
-                  onChange={event => props.onSearch(event.target.value)}/>
-            </div>
+            {props.search ? <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <SearchIcon/>
+                  </div>
+                  <InputBase
+                      placeholder="Patient…"
+                      classes={{
+                        root: classes.inputRoot,
+                        input: classes.inputInput,
+                      }}
+                      onChange={event => props.onSearch(event.target.value)}/>
+                </div>
+                : null}
           </Toolbar>
         </AppBar>
       </div>

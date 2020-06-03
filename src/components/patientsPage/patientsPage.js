@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import * as axios from 'axios';
 import TopBar from '../topBar/topBar';
 import PatientCard from '../patientCard/patientCard';
+import axiosInstance from '../../utils/axiosInstance';
 
 const PatientsPage = (props) => {
-  const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8080/baseR4',
-    timeout: 10000,
-    headers: {'Accept': 'application/fhir+json'}
-  });
-
   const [patients, setPatients] = useState([]);
   const [searched, setSearched] = useState([]);
 
@@ -25,7 +19,7 @@ const PatientsPage = (props) => {
 
   return (
       <div>
-        <TopBar onSearch={setSearched}/>
+        <TopBar title="Patients" search onSearch={setSearched}/>
         {patients.filter(patient => !searched.length || patient.name[0].family.toLowerCase().match(searched))
             .map((patient) => {
               return (
@@ -35,7 +29,7 @@ const PatientsPage = (props) => {
                       firstName={patient.name[0].given[0]}
                       surname={patient.name[0].family}
                       birthDate={patient.birthDate}
-                      telecom={patient.telecom}/>
+                      telecom={patient.telecom[0].value}/>
               );
             })}
       </div>
