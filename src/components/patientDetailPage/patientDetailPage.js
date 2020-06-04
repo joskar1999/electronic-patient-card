@@ -24,6 +24,7 @@ const PatientDetailPage = (props) => {
   const [observations, setObservations] = useState([]);
   const [medicationRequests, setMedicationRequests] = useState([]);
   const [chartTitle, setChartTitle] = useState('Click on observation to see chart');
+  const [chartData, setChartData] = useState([]);
   const {id} = useParams();
 
   useEffect(() => {
@@ -83,11 +84,22 @@ const PatientDetailPage = (props) => {
   }, [id]);
 
   const updateChart = (dataType) => {
-    setChartTitle(dataType);
+    const filtered = observations.filter(observation => observation.code.text === dataType);
+    filtered.length && filtered[0].valueQuantity
+        ? setChartTitle(dataType)
+        : setChartTitle(`${dataType} - Not Applicable`);
+    const data = filtered
+        .map(observation => {
+          return {
+            date: observation.effectiveDateTime.substr(0, 10),
+            value: observation.valueQuantity ? Math.round(observation.valueQuantity.value * 100) / 100 : 0
+          };
+        });
+    setChartData([...data]);
   };
 
   return (
-      <div>
+      <React.Fragment>
         <TopBar title={`${userData.firstName} ${userData.surname}`}/>
         <PatientCard
             firstName={userData.firstName}
@@ -110,18 +122,11 @@ const PatientDetailPage = (props) => {
           <PatientDataTile width={70}>
             <TileTitle>{chartTitle}</TileTitle>
             <TimelineWrapper>
-              <MedicalChart data={[
-                {date: 1, value: 2},
-                {date: 2, value: 3},
-                {date: 3, value: 6},
-                {date: 4, value: 1},
-                {date: 5, value: 4},
-                {date: 6, value: 3},
-              ]}/>
+              <MedicalChart data={chartData}/>
             </TimelineWrapper>
           </PatientDataTile>
         </TimelinesContainer>
-      </div>
+      </React.Fragment>
   );
 };
 

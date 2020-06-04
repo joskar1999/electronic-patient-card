@@ -3,7 +3,7 @@ import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 const MedicalChart = ({data}) => {
   return (
-      <LineChart width={600} height={300} data={data}>
+      <LineChart width={550} height={300} data={data}>
         <CartesianGrid strokeDasharray="3 3"/>
         <XAxis dataKey="date"/>
         <YAxis/>
