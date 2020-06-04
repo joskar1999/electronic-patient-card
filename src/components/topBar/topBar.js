@@ -54,16 +54,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const TopBar = (props) => {
+const TopBar = ({title, search, onSearch}) => {
   const classes = useStyles();
   return (
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
-              {props.title}
+              {title}
             </Typography>
-            {props.search ? <div className={classes.search}>
+            {search ? <div className={classes.search}>
                   <div className={classes.searchIcon}>
                     <SearchIcon/>
                   </div>
@@ -73,7 +73,7 @@ const TopBar = (props) => {
                         root: classes.inputRoot,
                         input: classes.inputInput,
                       }}
-                      onChange={event => props.onSearch(event.target.value)}/>
+                      onChange={event => onSearch(event.target.value)}/>
                 </div>
                 : null}
           </Toolbar>

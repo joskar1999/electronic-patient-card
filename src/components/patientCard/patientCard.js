@@ -19,23 +19,23 @@ const useStyles = makeStyles({
   },
 });
 
-const PatientCard = (props) => {
+const PatientCard = ({firstName, surname, birthDate, telecom, id}) => {
   const classes = useStyles();
   return (
       <Card className={classes.root}>
         <CardContent>
           <Typography className={classes.title} variant="h6" gutterBottom>
-            Name: {props.firstName} {props.surname}
+            Name: {firstName} {surname}
           </Typography>
           <Typography className={classes.title} variant="h6" gutterBottom>
-            Birth date: {props.birthDate}
+            Birth date: {birthDate}
           </Typography>
           <Typography className={classes.title} variant="h6" gutterBottom>
-            Phone number: {props.telecom}
+            Phone number: {telecom}
           </Typography>
         </CardContent>
         <CardActions>
-          {props.id ? <Link to={`/patients/${props.id}`} style={{textDecoration: 'none'}}>
+          {id ? <Link to={`/patients/${id}`} style={{textDecoration: 'none'}}>
                 <Button size="small">Show details</Button>
               </Link>
               : null}
