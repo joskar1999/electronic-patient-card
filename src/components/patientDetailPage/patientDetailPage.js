@@ -27,6 +27,36 @@ const PatientDetailPage = (props) => {
   const [chartData, setChartData] = useState([]);
   const {id} = useParams();
 
+  const fetchData = async (next, handleFetchedData, url) => {
+    return next
+        ? await axiosInstance.get(next).then(({data: {entry, link}}) => {
+          handleFetchedData(entry, link);
+        })
+        : await axiosInstance.get(url).then(({data: {entry, link}}) => {
+          handleFetchedData(entry, link);
+        });
+  };
+
+  const fetchNextPage = (link, recursiveCall) => {
+    link.filter(item => item.relation === 'next').length
+        ? recursiveCall(link.filter(item => item.relation === 'next')[0].url)
+        : console.log('data fetched');
+  };
+
+  const mapAndUpdateObservations = (entry) => {
+    const entries = entry.map(({resource: {id, category, code, valueQuantity, effectiveDateTime}}) => {
+      return {id, category, code, valueQuantity, effectiveDateTime};
+    });
+    setObservations(prevState => [...prevState, ...entries]);
+  };
+
+  const mapAndUpdateMedicationRequests = (entry) => {
+    const entries = entry.map(({resource: {id, medicationCodeableConcept, authoredOn}}) => {
+      return {id, medicationCodeableConcept, authoredOn};
+    });
+    setMedicationRequests((prevState => [...prevState, ...entries]));
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       const {data: {name, telecom, birthDate}} = await axiosInstance.get(`${baseUrl}/Patient/${id}`);
@@ -43,20 +73,10 @@ const PatientDetailPage = (props) => {
   useEffect(() => {
     const fetchObservations = async (next) => {
       const handleFetchedData = (entry, link) => {
-        setObservations(prevState => [...prevState, ...entry.map(({resource: {id, category, code, valueQuantity, effectiveDateTime}}) => {
-          return {id, category, code, valueQuantity, effectiveDateTime};
-        })]);
-        link.filter(item => item.relation === 'next').length
-            ? fetchObservations(link.filter(item => item.relation === 'next')[0].url)
-            : console.log('data fetched');
+        mapAndUpdateObservations(entry);
+        fetchNextPage(link, fetchObservations);
       };
-      return next
-          ? await axiosInstance.get(next).then(({data: {entry, link}}) => {
-            handleFetchedData(entry, link);
-          })
-          : await axiosInstance.get(`${baseUrl}/Observation?patient=${id}`).then(({data: {entry, link}}) => {
-            handleFetchedData(entry, link);
-          });
+      return await fetchData(next, handleFetchedData, `${baseUrl}/Observation?patient=${id}`);
     };
     fetchObservations().then();
   }, [id]);
@@ -64,21 +84,10 @@ const PatientDetailPage = (props) => {
   useEffect(() => {
     const fetchMedicationRequests = async (next) => {
       const handleFetchedData = (entry, link) => {
-        setMedicationRequests((prevState => [...prevState, ...entry.map(({resource: {id, medicationCodeableConcept, authoredOn}}) => {
-          return {id, medicationCodeableConcept, authoredOn};
-        })]));
-        link.filter(item => item.relation === 'next').length
-            ? fetchMedicationRequests(link.filter(item => item.relation === 'next')[0].url)
-            : console.log('data fetched');
-
+        mapAndUpdateMedicationRequests(entry);
+        fetchNextPage(link, fetchMedicationRequests);
       };
-      return next
-          ? await axiosInstance.get(next).then(({data: {entry, link}}) => {
-            handleFetchedData(entry, link);
-          })
-          : await axiosInstance.get(`${baseUrl}/MedicationRequest?patient=${id}`).then(({data: {entry, link}}) => {
-            handleFetchedData(entry, link);
-          });
+      return await fetchData(next, handleFetchedData, `${baseUrl}/MedicationRequest?patient=${id}`);
     };
     fetchMedicationRequests().then();
   }, [id]);
