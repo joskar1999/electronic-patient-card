@@ -1,0 +1,84 @@
+.rs-timeline {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+    direction: ltr;
+}
+
+.observations-timeline {
+    margin-left: 20px;
+}
+
+ul {
+    margin-top: 0;
+}
+
+.rs-timeline-item {
+    position: relative;
+    text-align: left;
+}
+
+li {
+    display: list-item;
+}
+
+.rs-timeline-align-left .rs-timeline-item-tail {
+    left: 4px;
+}
+
+.rs-timeline-item-tail {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #858b94;
+}
+
+.rs-timeline-item-custom-dot {
+    text-align: center;
+}
+.rs-timeline-item-dot {
+    position: absolute;
+    top: 5px;
+}
+
+.custom-timeline .rs-timeline-item-custom-dot .rs-icon {
+    position: absolute;
+    background: #fff;
+    top: 0;
+    left: -2px;
+    border: 2px solid #ddd;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    padding-top: 9px;
+    color: #999;
+    margin-left: -13px;
+}
+.rs-icon-size-2x, .rs-icon-size-2x.rs-icon {
+    height: 28px;
+    font-size: 28px;
+}
+.rs-icon {
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    display: inline-block;
+    text-transform: none;
+    font-size: 14px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.rs-timeline-item:not(:last-child) .rs-timeline-item-content {
+    padding-bottom: 18px;
+}
+.custom-timeline .rs-timeline-item-content {
+    margin-left: 24px;
+}
+
+.rs-icon-observation-icon:before {
+    content: "\f09d";
+}

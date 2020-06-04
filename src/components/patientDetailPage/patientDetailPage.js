@@ -4,6 +4,9 @@ import PatientCard from '../patientCard/patientCard';
 import axiosInstance from '../../utils/axiosInstance';
 import TopBar from '../topBar/topBar';
 import { baseUrl } from '../../constants/constants';
+import ObservationsTimeline from '../observationsTimeline/observationsTimeline';
+import { TimelinesContainer, TimelineWrapper } from './component-styles';
+import MedicationRequestsTimeline from '../medicationRequestsTimeline/medicationRequestsTimeline';
 
 const PatientDetailPage = (props) => {
   const [userData, setUserData] = useState({
@@ -13,6 +16,7 @@ const PatientDetailPage = (props) => {
     telecom: ''
   });
   const [observations, setObservations] = useState([]);
+  const [medicationRequests, setMedicationRequests] = useState([]);
   const {id} = useParams();
 
   useEffect(() => {
@@ -49,6 +53,28 @@ const PatientDetailPage = (props) => {
     fetchObservations().then();
   }, [id]);
 
+  useEffect(() => {
+    const fetchMedicationRequests = async (next) => {
+      const handleFetchedData = (entry, link) => {
+        setMedicationRequests((prevState => [...prevState, ...entry.map(({resource: {id, medicationCodeableConcept, authoredOn}}) => {
+          return {id, medicationCodeableConcept, authoredOn};
+        })]));
+        link.filter(item => item.relation === 'next').length
+            ? fetchMedicationRequests(link.filter(item => item.relation === 'next')[0].url)
+            : console.log('data fetched');
+
+      };
+      return next
+          ? await axiosInstance.get(next).then(({data: {entry, link}}) => {
+            handleFetchedData(entry, link);
+          })
+          : await axiosInstance.get(`${baseUrl}/MedicationRequest?patient=${id}`).then(({data: {entry, link}}) => {
+            handleFetchedData(entry, link);
+          });
+    };
+    fetchMedicationRequests().then();
+  }, [id]);
+
   return (
       <div>
         <TopBar title={`${userData.firstName} ${userData.surname}`}/>
@@ -57,14 +83,14 @@ const PatientDetailPage = (props) => {
             surname={userData.surname}
             birthDate={userData.birthDate}
             telecom={userData.telecom}/>
-        {observations.map(observation => {
-          return (
-              <div key={observation.id}>
-                <p>{observation.category[0].coding[0].display} / {observation.code.text} / {observation.valueQuantity ? Math.round(observation.valueQuantity.value * 100) / 100 : ''}</p>
-                <p>{observation.effectiveDateTime.substring(0, 10)}</p>
-              </div>
-          );
-        })}
+        <TimelinesContainer>
+          <TimelineWrapper>
+            <ObservationsTimeline observations={observations}/>
+          </TimelineWrapper>
+          <TimelineWrapper>
+            <MedicationRequestsTimeline medicationRequests={medicationRequests}/>
+          </TimelineWrapper>
+        </TimelinesContainer>
       </div>
   );
 };
