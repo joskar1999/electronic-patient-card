@@ -137,7 +137,7 @@ const PatientDetailPage = (props) => {
             </TimelineWrapper>
           </PatientDataTile>
           <PatientDataTile width={70}>
-            <TileTitle>{chartData.length && titleApplicable ? chartTitle : `${chartTitle} - Not Applicable`}</TileTitle>ii
+            <TileTitle>{chartData.length && titleApplicable ? chartTitle : `${chartTitle} - Not Applicable`}</TileTitle>
             <TimelineWrapper>
               <MedicalChart data={chartData}/>
             </TimelineWrapper>
