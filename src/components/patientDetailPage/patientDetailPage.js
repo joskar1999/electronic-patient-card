@@ -5,8 +5,14 @@ import axiosInstance from '../../utils/axiosInstance';
 import TopBar from '../topBar/topBar';
 import { baseUrl } from '../../constants/constants';
 import ObservationsTimeline from '../observationsTimeline/observationsTimeline';
-import { TimelinesContainer, TimelineWrapper } from './component-styles';
+import {
+  PatientDataTile,
+  TileTitle,
+  TimelinesContainer,
+  TimelineWrapper
+} from './component-styles';
 import MedicationRequestsTimeline from '../medicationRequestsTimeline/medicationRequestsTimeline';
+import MedicalChart from '../medicalChart/medicalChart';
 
 const PatientDetailPage = (props) => {
   const [userData, setUserData] = useState({
@@ -17,6 +23,7 @@ const PatientDetailPage = (props) => {
   });
   const [observations, setObservations] = useState([]);
   const [medicationRequests, setMedicationRequests] = useState([]);
+  const [chartTitle, setChartTitle] = useState('Click on observation to see chart');
   const {id} = useParams();
 
   useEffect(() => {
@@ -75,6 +82,10 @@ const PatientDetailPage = (props) => {
     fetchMedicationRequests().then();
   }, [id]);
 
+  const updateChart = (dataType) => {
+    setChartTitle(dataType);
+  };
+
   return (
       <div>
         <TopBar title={`${userData.firstName} ${userData.surname}`}/>
@@ -84,12 +95,31 @@ const PatientDetailPage = (props) => {
             birthDate={userData.birthDate}
             telecom={userData.telecom}/>
         <TimelinesContainer>
-          <TimelineWrapper>
-            <ObservationsTimeline observations={observations}/>
-          </TimelineWrapper>
-          <TimelineWrapper>
-            <MedicationRequestsTimeline medicationRequests={medicationRequests}/>
-          </TimelineWrapper>
+          <PatientDataTile width={60}>
+            <TileTitle>Observations</TileTitle>
+            <TimelineWrapper>
+              <ObservationsTimeline observations={observations} onClick={updateChart}/>
+            </TimelineWrapper>
+          </PatientDataTile>
+          <PatientDataTile width={40}>
+            <TileTitle>Medication Requests</TileTitle>
+            <TimelineWrapper>
+              <MedicationRequestsTimeline medicationRequests={medicationRequests}/>
+            </TimelineWrapper>
+          </PatientDataTile>
+          <PatientDataTile width={70}>
+            <TileTitle>{chartTitle}</TileTitle>
+            <TimelineWrapper>
+              <MedicalChart data={[
+                {date: 1, value: 2},
+                {date: 2, value: 3},
+                {date: 3, value: 6},
+                {date: 4, value: 1},
+                {date: 5, value: 4},
+                {date: 6, value: 3},
+              ]}/>
+            </TimelineWrapper>
+          </PatientDataTile>
         </TimelinesContainer>
       </div>
   );
