@@ -5,14 +5,10 @@ import axiosInstance from '../../utils/axiosInstance';
 import TopBar from '../topBar/topBar';
 import { baseUrl } from '../../constants/constants';
 import ObservationsTimeline from '../observationsTimeline/observationsTimeline';
-import {
-  PatientDataTile,
-  TileTitle,
-  TimelinesContainer,
-  TimelineWrapper
-} from './component-styles';
+import { PatientDataTile, TileTitle, TimelinesContainer, TimelineWrapper } from './componentStyles';
 import MedicationRequestsTimeline from '../medicationRequestsTimeline/medicationRequestsTimeline';
 import MedicalChart from '../medicalChart/medicalChart';
+import DateSelection from '../dateSelection/dateSelection';
 
 const PatientDetailPage = (props) => {
   const [userData, setUserData] = useState({
@@ -25,6 +21,8 @@ const PatientDetailPage = (props) => {
   const [medicationRequests, setMedicationRequests] = useState([]);
   const [chartTitle, setChartTitle] = useState('Click on observation to see chart');
   const [chartData, setChartData] = useState([]);
+  const [startDate, setStartDate] = useState('1900-01-01');
+  const [endDate, setEndDate] = useState('2200-01-01');
   const {id} = useParams();
 
   const fetchData = async (next, handleFetchedData, url) => {
@@ -93,7 +91,9 @@ const PatientDetailPage = (props) => {
   }, [id]);
 
   const updateChart = (dataType) => {
-    const filtered = observations.filter(observation => observation.code.text === dataType);
+    const filtered = observations.filter(observation => observation.code.text === dataType)
+        .filter(observation => !!startDate && new Date(observation.effectiveDateTime) >= new Date(startDate))
+        .filter(observation => !!endDate && new Date(observation.effectiveDateTime) <= new Date(endDate));
     filtered.length && filtered[0].valueQuantity
         ? setChartTitle(dataType)
         : setChartTitle(`${dataType} - Not Applicable`);
@@ -105,6 +105,12 @@ const PatientDetailPage = (props) => {
           };
         });
     setChartData([...data]);
+  };
+
+  const filterChartByDate = ({fromDate, toDate}) => {
+    if (fromDate) setStartDate(fromDate);
+    if (toDate) setEndDate(toDate);
+    updateChart(chartTitle);
   };
 
   return (
@@ -133,6 +139,9 @@ const PatientDetailPage = (props) => {
             <TimelineWrapper>
               <MedicalChart data={chartData}/>
             </TimelineWrapper>
+            <DateSelection
+                onFromChanged={filterChartByDate}
+                onToChanged={filterChartByDate}/>
           </PatientDataTile>
         </TimelinesContainer>
       </React.Fragment>
