@@ -23,6 +23,7 @@ const PatientDetailPage = (props) => {
   const [chartData, setChartData] = useState([]);
   const [startDate, setStartDate] = useState('1900-01-01');
   const [endDate, setEndDate] = useState('2200-01-01');
+  const [titleApplicable, setTitleApplicable] = useState(true);
   const {id} = useParams();
 
   const fetchData = async (next, handleFetchedData, url) => {
@@ -91,12 +92,13 @@ const PatientDetailPage = (props) => {
   }, [id]);
 
   const updateChart = (dataType) => {
+    setChartTitle(dataType);
     const filtered = observations.filter(observation => observation.code.text === dataType)
         .filter(observation => !!startDate && new Date(observation.effectiveDateTime) >= new Date(startDate))
         .filter(observation => !!endDate && new Date(observation.effectiveDateTime) <= new Date(endDate));
     filtered.length && filtered[0].valueQuantity
-        ? setChartTitle(dataType)
-        : setChartTitle(`${dataType} - Not Applicable`);
+        ? setTitleApplicable(true)
+        : setTitleApplicable(false);
     const data = filtered
         .map(observation => {
           return {
@@ -135,7 +137,7 @@ const PatientDetailPage = (props) => {
             </TimelineWrapper>
           </PatientDataTile>
           <PatientDataTile width={70}>
-            <TileTitle>{chartTitle}</TileTitle>
+            <TileTitle>{chartData.length && titleApplicable ? chartTitle : `${chartTitle} - Not Applicable`}</TileTitle>ii
             <TimelineWrapper>
               <MedicalChart data={chartData}/>
             </TimelineWrapper>
